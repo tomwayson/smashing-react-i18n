@@ -5,7 +5,7 @@
   "main": "dist/bundle.js",
   "scripts": {
     "build": "better-npm-run build",
-    "build:langs": "babel scripts/translate.js | node",
+    "build:langs": "babel scripts/translate.js | node && cp build/lang/en.json public/assets/en.json",
     "webpack-devserver": "webpack-dev-server --debug --hot --devtool eval-source-map --output-pathinfo --watch --colors --inline --content-base public --port 8050 --host 0.0.0.0",
     "nodemon": "better-npm-run nodemon"
   },
