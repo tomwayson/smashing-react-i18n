@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { FormattedMessage, intlShape, injectIntl, defineMessages } from 'react-intl';
+import LocaleButton from './LocaleButton';
 
 const propTypes = {
   intl: intlShape.isRequired,
@@ -18,6 +19,7 @@ class App extends Component {
       <div className="App">
         <h1><FormattedMessage id="app.hello_world" defaultMessage="Hello World!" description="Hello world header greeting" /></h1>
         <h1>{this.props.intl.formatMessage(messages.helloWorld2)}</h1>
+        <h1><LocaleButton locale={this.props.intl.locale} /></h1>
       </div>
     );
   }
