@@ -25,7 +25,7 @@ const localeData = {};
 
 const assetUrl = process.env.NODE_ENV !== 'production' ? 'http://localhost:8050' : '/';
 
-function renderHTML(componentHTML, locale) {
+function renderHTML(componentHTML, locale, initialNow) {
   return `
     <!DOCTYPE html>
       <html>
@@ -38,6 +38,7 @@ function renderHTML(componentHTML, locale) {
         <div id="react-view">${componentHTML}</div>
         <script type="application/javascript" src="${assetUrl}/public/assets/bundle.js"></script>
         <script type="application/javascript">${localeData[locale]}</script>
+        <script type="application/javascript">window.INITIAL_NOW=${JSON.stringify(initialNow)}</script>
       </body>
     </html>
   `;
@@ -62,15 +63,16 @@ function detectLocale(req) {
 
 app.use((req, res) => {
   const locale = detectLocale(req);
+  const initialNow = Date.now();
   const componentHTML = ReactDom.renderToString(
-    <IntlProvider locale={locale} messages={messages[locale]}>
+    <IntlProvider locale={locale} messages={messages[locale]} initialNow={initialNow}>
       <App />
     </IntlProvider>
   );
 
   // cache the language preference for subsequent requests
   res.cookie('locale', locale, { maxAge: (new Date() * 0.001) + (365 * 24 * 3600) });
-  return res.end(renderHTML(componentHTML, locale));
+  return res.end(renderHTML(componentHTML, locale, initialNow));
 });
 
 const PORT = process.env.PORT || 3001;

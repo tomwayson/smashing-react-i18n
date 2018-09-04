@@ -1,6 +1,14 @@
 import React, { Component } from 'react';
-import { FormattedMessage, intlShape, injectIntl, defineMessages } from 'react-intl';
 import LocaleButton from './LocaleButton';
+import {
+  FormattedDate,
+  FormattedRelative,
+  FormattedNumber,
+  FormattedMessage,
+  intlShape,
+  injectIntl,
+  defineMessages,
+} from 'react-intl';
 
 const propTypes = {
   intl: intlShape.isRequired,
@@ -27,6 +35,11 @@ class App extends Component {
         <div>{this.props.intl.formatMessage(messages.counting, { count: 1 })}</div>
         <div>{this.props.intl.formatMessage(messages.counting, { count: 2 })}</div>
         <div>{this.props.intl.formatMessage(messages.counting, { count: 5 })}</div>
+        <div>{this.props.intl.formatMessage(messages.counting, { count: 5 })}</div>
+        {/* NOTE: The following will _always_ use the 'en' locale on the server, why? */}
+        <div><FormattedDate value={Date.now()} /></div>
+        <div><FormattedNumber value="1000" currency="USD" currencyDisplay="symbol" style="currency" /></div>
+        <div><FormattedRelative value={1536104584358} /></div>
       </div>
     );
   }

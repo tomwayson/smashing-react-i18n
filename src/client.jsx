@@ -25,7 +25,7 @@ fetch(`/public/assets/${locale}.json`)
 
         
     ReactDOM.render(
-      <IntlProvider locale={locale} messages={localeData}>
+      <IntlProvider locale={locale} messages={localeData} initialNow={parseInt(window.INITIAL_NOW, 10)}>
         <App />
       </IntlProvider>,
       document.getElementById('react-view')
