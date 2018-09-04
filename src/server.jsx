@@ -4,11 +4,28 @@ import ReactDom from 'react-dom/server';
 import App from './components/App';
 import cookieParser from 'cookie-parser';
 import acceptLanguage from 'accept-language';
-import { IntlProvider } from 'react-intl';
+import { addLocaleData, IntlProvider } from 'react-intl';
+import fs from 'fs';
+import path from 'path';
+
+// read in messages for all locales
+import en from 'react-intl/locale-data/en';
+import ru from 'react-intl/locale-data/ru';
+
+
+addLocaleData([...ru, ...en]);
+
+const messages = {};
+const localeData = {};
+
+['en', 'ru'].forEach((locale) => {
+  localeData[locale] = fs.readFileSync(path.join(__dirname, `../node_modules/react-intl/locale-data/${locale}.js`)).toString();
+  messages[locale] = require(`../public/assets/${locale}.json`);
+});
 
 const assetUrl = process.env.NODE_ENV !== 'production' ? 'http://localhost:8050' : '/';
 
-function renderHTML(componentHTML) {
+function renderHTML(componentHTML, locale) {
   return `
     <!DOCTYPE html>
       <html>
@@ -20,6 +37,7 @@ function renderHTML(componentHTML) {
       <body>
         <div id="react-view">${componentHTML}</div>
         <script type="application/javascript" src="${assetUrl}/public/assets/bundle.js"></script>
+        <script type="application/javascript">${localeData[locale]}</script>
       </body>
     </html>
   `;
@@ -32,6 +50,7 @@ acceptLanguage.languages(['en', 'ru']);
 const app = express();
 
 app.use(cookieParser());
+app.use('/public/assets', express.static('public/assets'));
 
 function detectLocale(req) {
   const cookieLocale = req.cookies.locale;
@@ -44,14 +63,14 @@ function detectLocale(req) {
 app.use((req, res) => {
   const locale = detectLocale(req);
   const componentHTML = ReactDom.renderToString(
-    <IntlProvider locale={locale}>
+    <IntlProvider locale={locale} messages={messages[locale]}>
       <App />
     </IntlProvider>
   );
 
   // cache the language preference for subsequent requests
   res.cookie('locale', locale, { maxAge: (new Date() * 0.001) + (365 * 24 * 3600) });
-  return res.end(renderHTML(componentHTML));
+  return res.end(renderHTML(componentHTML, locale));
 });
 
 const PORT = process.env.PORT || 3001;
