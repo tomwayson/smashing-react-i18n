@@ -2,6 +2,8 @@ import express from 'express';
 import React from 'react';
 import ReactDom from 'react-dom/server';
 import App from './components/App';
+import cookieParser from 'cookie-parser';
+import acceptLanguage from 'accept-language';
 
 const assetUrl = process.env.NODE_ENV !== 'production' ? 'http://localhost:8050' : '/';
 
@@ -22,11 +24,28 @@ function renderHTML(componentHTML) {
   `;
 }
 
+// the languages supported by this app
+// TODO: pull this from a config file?
+acceptLanguage.languages(['en', 'ru']);
+
 const app = express();
 
+app.use(cookieParser());
+
+function detectLocale(req) {
+  const cookieLocale = req.cookies.locale;
+
+  // first check for a language preference that we have already set
+  // otherwise try to parse from the header or default to 'en'
+  return acceptLanguage.get(cookieLocale || req.headers['accept-language']) || 'en';
+}
+
 app.use((req, res) => {
+  const locale = detectLocale(req);
   const componentHTML = ReactDom.renderToString(<App />);
 
+  // cache the language preference for subsequent requests
+  res.cookie('locale', locale, { maxAge: (new Date() * 0.001) + (365 * 24 * 3600) });
   return res.end(renderHTML(componentHTML));
 });
 
