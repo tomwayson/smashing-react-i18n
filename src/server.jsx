@@ -4,6 +4,7 @@ import ReactDom from 'react-dom/server';
 import App from './components/App';
 import cookieParser from 'cookie-parser';
 import acceptLanguage from 'accept-language';
+import { IntlProvider } from 'react-intl';
 
 const assetUrl = process.env.NODE_ENV !== 'production' ? 'http://localhost:8050' : '/';
 
@@ -42,7 +43,11 @@ function detectLocale(req) {
 
 app.use((req, res) => {
   const locale = detectLocale(req);
-  const componentHTML = ReactDom.renderToString(<App />);
+  const componentHTML = ReactDom.renderToString(
+    <IntlProvider locale={locale}>
+      <App />
+    </IntlProvider>
+  );
 
   // cache the language preference for subsequent requests
   res.cookie('locale', locale, { maxAge: (new Date() * 0.001) + (365 * 24 * 3600) });
