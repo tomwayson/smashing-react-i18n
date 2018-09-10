@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import LocaleButton from './LocaleButton';
+import Counting from './Counting';
 import {
   FormattedDate,
   FormattedRelative,
@@ -15,10 +16,6 @@ const propTypes = {
 };
 
 const messages = defineMessages({
-  counting: {
-    id: 'app.counting',
-    defaultMessage: 'I need to buy {count, number} {count, plural, one {apple} other {apples}}'
-  },
   helloWorld2: {
     id: 'app.hello_world2',
     defaultMessage: 'Hello World 2!',
@@ -32,10 +29,7 @@ class App extends Component {
         <h1><FormattedMessage id="app.hello_world" defaultMessage="Hello World!" description="Hello world header greeting" /></h1>
         <h1>{this.props.intl.formatMessage(messages.helloWorld2)}</h1>
         <h1><LocaleButton locale={this.props.intl.locale} /></h1>
-        <div>{this.props.intl.formatMessage(messages.counting, { count: 1 })}</div>
-        <div>{this.props.intl.formatMessage(messages.counting, { count: 2 })}</div>
-        <div>{this.props.intl.formatMessage(messages.counting, { count: 5 })}</div>
-        <div>{this.props.intl.formatMessage(messages.counting, { count: 5 })}</div>
+        <Counting />
         {/* NOTE: The following will _always_ use the 'en' locale on the server, why? */}
         <div><FormattedDate value={Date.now()} /></div>
         <div><FormattedNumber value="1000" currency="USD" currencyDisplay="symbol" style="currency" /></div>
