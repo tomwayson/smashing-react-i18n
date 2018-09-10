@@ -7,7 +7,8 @@
     "build": "better-npm-run build",
     "build:langs": "babel scripts/translate.js | node && cp build/lang/en.json public/assets/en.json",
     "webpack-devserver": "webpack-dev-server --debug --hot --devtool eval-source-map --output-pathinfo --watch --colors --inline --content-base public --port 8050 --host 0.0.0.0",
-    "nodemon": "better-npm-run nodemon"
+    "nodemon": "better-npm-run nodemon",
+    "test": "jest"
   },
   "betterScripts": {
     "build": {
@@ -44,8 +45,12 @@
     "babel-preset-stage-0": "^6.16.0",
     "better-npm-run": "0.0.13",
     "clean-webpack-plugin": "^0.1.14",
+    "enzyme": "^3.6.0",
+    "enzyme-adapter-react-15": "^1.1.0",
+    "jest": "^23.6.0",
     "nodemon": "1.8.1",
     "react-hot-loader": "^1.2.9",
+    "react-test-renderer": "^15.6.2",
     "webpack": "^1.13.3",
     "webpack-dev-server": "^1.16.2"
   },
@@ -59,5 +64,8 @@
     "react": "^15.4.0",
     "react-dom": "^15.4.0",
     "react-intl": "^2.4.0"
+  },
+  "jest": {
+    "setupTestFrameworkScriptFile": "<rootDir>setupTests.js"
   }
 }
