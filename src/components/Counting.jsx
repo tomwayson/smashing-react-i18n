@@ -5,10 +5,6 @@ import {
   defineMessages,
 } from 'react-intl';
 
-const propTypes = {
-  intl: intlShape.isRequired,
-};
-
 const messages = defineMessages({
   iNeedToBuyApples: {
     id: 'counting.iNeedToBuyApples',
@@ -16,7 +12,8 @@ const messages = defineMessages({
   }
 });
 
-class Counting extends Component {
+// NOTE: have to use a named export here as well as the default below for testing
+export class Counting extends Component {
   render() {
     return (
       <div className="counting">
@@ -29,6 +26,11 @@ class Counting extends Component {
   }
 }
 
-Counting.propTypes = propTypes;
+// TODO: why does this cause the following console error in tests?
+// Warning: Failed prop type: The prop `intl` is marked as required in `Counting`, but its value is `undefined`.
+//           in Counting
+Counting.propTypes = {
+  intl: intlShape.isRequired,
+};
 
 export default injectIntl(Counting);
