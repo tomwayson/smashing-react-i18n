@@ -12,14 +12,12 @@ const messages = defineMessages({
   }
 });
 
-// NOTE: have to use a named export here as well as the default below for testing
-export class Counting extends Component {
+class Counting extends Component {
   render() {
     return (
       <div className="counting">
         <div>{this.props.intl.formatMessage(messages.iNeedToBuyApples, { count: 1 })}</div>
         <div>{this.props.intl.formatMessage(messages.iNeedToBuyApples, { count: 2 })}</div>
-        <div>{this.props.intl.formatMessage(messages.iNeedToBuyApples, { count: 5 })}</div>
         <div>{this.props.intl.formatMessage(messages.iNeedToBuyApples, { count: 5 })}</div>
       </div>
     );

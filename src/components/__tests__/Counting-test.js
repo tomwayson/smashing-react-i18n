@@ -1,11 +1,13 @@
 import React from 'react';
-import { shallowWithIntl } from '../../../helpers/intl-enzyme-test-helper';
-// NOTE: we are importing the named export, not the default
-import { Counting } from '../Counting';
+import { mountWithIntl, loadTranslation } from 'enzyme-react-intl';
+import Counting from '../Counting';
 
-test('Counting text should be the _other_ locale', () => {
-  // render button w/ en locale
-  const wrapper = shallowWithIntl(<Counting />);
+// load in the desired react-intl translation file
+// NOTE: this is optional, you could just test against the default strings
+loadTranslation('../../../public/assets/en.json');
 
-  expect(wrapper.text()).toEqual('I need to buy 1 appleI need to buy 2 applesI need to buy 5 applesI need to buy 5 apples');
+test('Counting text should match for 1, 2, and 5', () => {
+  const wrapper = mountWithIntl(<Counting />);
+
+  expect(wrapper.text()).toEqual('I need to buy 1 appleI need to buy 2 applesI need to buy 5 apples');
 });

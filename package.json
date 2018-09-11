@@ -47,6 +47,7 @@
     "clean-webpack-plugin": "^0.1.14",
     "enzyme": "^3.6.0",
     "enzyme-adapter-react-15": "^1.1.0",
+    "enzyme-react-intl": "^2.0.1",
     "jest": "^23.6.0",
     "nodemon": "1.8.1",
     "react-hot-loader": "^1.2.9",
