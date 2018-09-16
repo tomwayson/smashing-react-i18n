@@ -52,6 +52,7 @@ const app = express();
 
 app.use(cookieParser());
 app.use('/public/assets', express.static('public/assets'));
+app.use('/widgets', express.static('src/components/widgets'));
 
 function detectLocale(req) {
   const cookieLocale = req.cookies.locale;

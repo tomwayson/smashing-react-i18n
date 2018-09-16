@@ -8,6 +8,7 @@ import {
   injectIntl,
   defineMessages,
 } from 'react-intl';
+import WidgetWrapper from './WidgetWrapper';
 
 const propTypes = {
   intl: intlShape.isRequired,
@@ -29,6 +30,7 @@ class App extends Component {
         <h1><LocaleButton locale={this.props.intl.locale} /></h1>
         <Counting />
         <FormattingExample />
+        <WidgetWrapper uri="/widgets/TestWidget" />
       </div>
     );
   }
