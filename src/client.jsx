@@ -4,12 +4,28 @@ import App from './components/App';
 import { addLocaleData, IntlProvider } from 'react-intl';
 import Cookie from 'js-cookie';
 import fetch from 'isomorphic-fetch';
+import { getBrowserLanguage, getSupportedLocale } from 'util/i18n';
 
 // NOTE: language preference is detected on the server
 // from the accept-languages header and cached in a cookie
-// TODO: if no cookie - get from navigator languages
-// otherwise default to 'en'
-const locale = Cookie.get('locale') || 'en';
+let locale = Cookie.get('locale') || 'en';
+
+if (!locale) {
+  // if no locale cookie - get a supported locale from navigator languages
+  // otherwise default to 'en'
+
+  // list of the locale's we support
+  // TODO: get these from a config file shared by client and server
+  let supportedLocales = ['en', 'ru'];
+  // NOTE: this is the list we use in the Hub 
+  // let supportedLocales = ['cs', 'bs', 'da', 'de', 'en-us', 'es', 'et', 'el', 'fi', 'fr', 'hr', 'id', 'it',
+  //   'ja', 'ko', 'lt', 'lv', 'nb', 'nl', 'pl', 'pt-br', 'pt', 'pt-pt', 'ro', 'ru', 'sl', 'sr',
+  //   'sv', 'th', 'tr', 'vi', 'zh', 'zh-cn', 'zh-tw', 'zh-hk'
+  // ];
+  locale = getSupportedLocale(getBrowserLanguage(window && window.navigator), supportedLocales) || 'en';
+  // cache this locale for the next visit
+  Cookie.set('locale', locale);
+}
 
 fetch(`/public/assets/${locale}.json`)
   .then((res) => {
