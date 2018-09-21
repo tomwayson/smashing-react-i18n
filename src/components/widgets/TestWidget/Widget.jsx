@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import Counting from '../../Counting';
+
 import {
   FormattedMessage,
   intlShape
@@ -14,7 +16,10 @@ class TestWidget extends Component {
   }
 
   render() {
-    return <div><FormattedMessage id="TestWidget.thisIsATestWidget" defaultMessage="This is a test widget" /></div>;
+    return <div>
+      <FormattedMessage id="TestWidget.thisIsATestWidget" defaultMessage="This is a test widget" />
+      <Counting />
+    </div>;
   }
 }
 

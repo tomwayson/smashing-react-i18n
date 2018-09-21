@@ -25,6 +25,7 @@ class WidgetWrapper extends Component {
   }
 
   loadWidget(uri) {
+    const intl = this.props.intl;
     // first fetch the manifest
     fetchJson(`${uri}/manifest.json`)
     .then(manifest => {
@@ -39,7 +40,7 @@ class WidgetWrapper extends Component {
       }));
       if (manifest.supportedLocales) {
         // fetch messages for the current locale, if the widget supports it
-        const locale = this.props.intl.locale;
+        const locale = intl.locale;
         if (manifest.supportedLocales.includes(locale)) {
           requests.push(fetchJson(`.${uri}/messages/${locale}.json`));
         }
@@ -48,8 +49,9 @@ class WidgetWrapper extends Component {
       Promise.all(requests)
       .then(([module, localeMessages]) => {
         this.WidgetClass = module.default;
+        this.messages = intl.messages;
         if (localeMessages) {
-          this.localeMessages = localeMessages;
+          this.messages = {...this.messages, ...localeMessages};
         }
         // re-render the widget
         this.setState({ isWidgetLoaded: true });
@@ -70,7 +72,7 @@ class WidgetWrapper extends Component {
     // TODO: make this work more like ExB which, I assume,
     // renders local widgets (i.e. those not remotely hosted) on the server
     return this.state.isWidgetLoaded && (
-      <IntlProvider locale={this.props.intl.locale} messages={this.localeMessages} initialNow={parseInt(window.INITIAL_NOW, 10)}>
+      <IntlProvider locale={this.props.intl.locale} messages={this.messages} initialNow={parseInt(window.INITIAL_NOW, 10)}>
         {/* NOTE: we are passing intl as a prop so that widget authors don't have to injectIntl() */}
         <this.WidgetClass intl={this.props.intl} />
       </IntlProvider>
