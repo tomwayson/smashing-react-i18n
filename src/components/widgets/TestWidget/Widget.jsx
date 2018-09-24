@@ -17,7 +17,7 @@ class TestWidget extends Component {
 
   render() {
     return <div>
-      <FormattedMessage id="TestWidget.thisIsATestWidget" defaultMessage="This is a test widget" />
+      <FormattedMessage id="TestWidget.thisIsATestWidget" />
       <Counting />
     </div>;
   }

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { fetchJson } from 'util';
 import {
   intlShape,
   injectIntl,
@@ -13,10 +14,6 @@ const propTypes = {
   // so we can only load the widget's messages for that locale
   intl: intlShape.isRequired
 };
-
-function fetchJson(url) {
-  return fetch(url).then(response => response.ok && response.json());
-}
 
 class WidgetWrapper extends Component {
   constructor(props) {
