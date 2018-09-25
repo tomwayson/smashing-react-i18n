@@ -5,8 +5,12 @@ import { addLocaleData, IntlProvider } from 'react-intl';
 import Cookie from 'js-cookie';
 import { getBrowserLanguage, getSupportedLocale } from 'util/i18n';
 import { fetchJson } from './util';
+// include default messages in the bundle
+const defaultMessages = require('../public/assets/en.json');
 
-const defaultLocale = 'en'
+// NOTE: this needs to be the same as what is required for defaultMessages
+// and therefore cannot be dynamically read from an app's config
+const defaultLocale = 'en';
 
 // NOTE: language preference is detected on the server
 // from the accept-languages header and cached in a cookie
@@ -30,20 +34,25 @@ if (!locale) {
   Cookie.set('locale', locale);
 }
 
-const messageRequests = [];
-// TODO: this should be included, and not fetched!
-messageRequests.push(fetchJson(`/public/assets/${defaultLocale}.json`));
-if (locale !== defaultLocale) {
-  messageRequests.push(fetchJson(`/public/assets/${locale}.json`));
+function loadLocaleMessages(locale, defaultLocale, defaultMessages) {
+  if (locale !== defaultLocale) {
+    return fetchJson(`/public/assets/${locale}.json`)
+    .then(localeMessages => {
+      // each message should fallback to the default if not available for current locale
+      return { ...defaultMessages, ...localeMessages }
+    });
+  } else {
+    return Promise.resolve(defaultMessages);
+  }
 }
-Promise.all(messageRequests)
-  .then(([defaultMessages, localeMessages]) => {
-    // each message should fallback to the default if not available for current locale
-    const messages = localeMessages ? { ...defaultMessages, ...localeMessages } : defaultMessages;
-    // TODO: how does this work?
-    addLocaleData(window.ReactIntlLocaleData[locale]);
-    // TODO: do we need to add the locale data for the default locale too if it's not the same?
 
+loadLocaleMessages(locale, defaultLocale, defaultMessages)
+  .then(messages => {
+    // NOTE: the locales are added to window.ReactIntlLocaleData in a script embedded on the server
+    addLocaleData(window.ReactIntlLocaleData[defaultLocale]);
+    if (locale !== defaultLocale) {
+      addLocaleData(window.ReactIntlLocaleData[locale]);
+    }
         
     ReactDOM.render(
       <IntlProvider locale={locale} messages={messages} initialNow={parseInt(window.INITIAL_NOW, 10)}>

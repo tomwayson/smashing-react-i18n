@@ -18,6 +18,7 @@ class App extends Component {
     return (
       <div className="App">
         <h1><FormattedMessage id="app.hello_world" /></h1>
+        <p><FormattedMessage id="app.enOnly" /></p>
         <h1><LocaleButton locale={this.props.intl.locale} /></h1>
         <Counting />
         <FormattingExample />
