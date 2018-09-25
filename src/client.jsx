@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom';
 import App from './components/App';
 import { addLocaleData, IntlProvider } from 'react-intl';
 import Cookie from 'js-cookie';
-import fetch from 'isomorphic-fetch';
 import { getBrowserLanguage, getSupportedLocale } from 'util/i18n';
 import { fetchJson } from './util';
 

@@ -35,21 +35,24 @@ class WidgetWrapper extends Component {
       requests.push(new Promise(resolve => {
         require.ensure([], require => resolve(require(`.${uri}/Widget`)));
       }));
-      if (manifest.supportedLocales) {
-        // fetch messages for the current locale, if the widget supports it
-        const locale = intl.locale;
-        if (manifest.supportedLocales.includes(locale)) {
-          requests.push(fetchJson(`.${uri}/messages/${locale}.json`));
-        }
+      if (manifest.defaultLocale) {
+        // fetch messages for the widget's default locale
+        requests.push(fetchJson(`.${uri}/messages/${manifest.defaultLocale}.json`))
+        if (manifest.supportedLocales) {
+          // fetch messages for the current locale, if the widget supports it
+          const locale = intl.locale;
+          if (manifest.supportedLocales.includes(locale)) {
+            requests.push(fetchJson(`.${uri}/messages/${locale}.json`));
+          }
+        }  
       }
       // load all the widget files
       Promise.all(requests)
-      .then(([module, localeMessages]) => {
+      .then(([module, defaultLocaleMessages, localeMessages]) => {
         this.WidgetClass = module.default;
         this.messages = intl.messages;
-        if (localeMessages) {
-          this.messages = {...this.messages, ...localeMessages};
-        }
+        // merge app messages with widget default and current locale messages
+        this.messages = {...intl.messages, ...defaultLocaleMessages,  ...localeMessages};
         // re-render the widget
         this.setState({ isWidgetLoaded: true });
       });
