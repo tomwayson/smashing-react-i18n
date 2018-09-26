@@ -1,3 +1,5 @@
+import { fetchJson } from './index';
+
 /**
 * Pull the language from the browser.
 * Somewhat convoluted because "browsers"
@@ -27,7 +29,7 @@ export function getBrowserLanguage (navigator) {
   }
 
   return null;
-}
+};
 
 /**
  * Use the browser to determine the locale to use
@@ -50,4 +52,27 @@ export function getSupportedLocale (locale, supportedLocales) {
       return parts[0];
     }
   }
+};
+
+/**
+ * load messages for the current locale and merge them into the current locale
+ */
+export function loadLocaleMessages(path, locale, defaultLocale, preLoadedDefaultMessages) {
+  // load default messages if they weren't passed in
+  const loadDefaultMessages = preLoadedDefaultMessages 
+    ? Promise.resolve(preLoadedDefaultMessages)
+    : fetchJson(`${path}/${defaultLocale}.json`);
+  return loadDefaultMessages
+  .then(defaultMessages => {
+    if (locale !== defaultLocale) {
+      // load the messages for the current locale
+      return fetchJson(`${path}/${locale}.json`)
+      .then(localeMessages => {
+        // each message should fallback to the default if not available for current locale
+        return { ...defaultMessages, ...localeMessages }
+      });
+    } else {
+      return defaultMessages;
+    }
+  });
 };

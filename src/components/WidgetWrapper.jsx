@@ -12,13 +12,18 @@ const propTypes = {
   uri: PropTypes.string.isRequired,
   // NOTE: we inject intl to get the current locale of the app
   // so we can only load the widget's messages for that locale
-  intl: intlShape.isRequired
+  intl: intlShape.isRequired,
+  loadedDependencies: PropTypes.array.isRequired,
+  onManifestLoaded: PropTypes.func
 };
 
 class WidgetWrapper extends Component {
   constructor(props) {
     super(props);
-    this.state = {isWidgetLoaded: false};
+    this.state = {
+      isWidgetLoaded: false,
+      dependency: null
+    };
   }
 
   loadWidget(uri) {
@@ -26,6 +31,13 @@ class WidgetWrapper extends Component {
     // first fetch the manifest
     fetchJson(`${uri}/manifest.json`)
     .then(manifest => {
+      if (this.props.onManifestLoaded) {
+        this.props.onManifestLoaded(manifest);
+      }
+      if (manifest.dependency) {
+        // ensure that the widget is not rendered until the dependency is loaded
+        this.setState({ dependency: manifest.dependency });
+      }
       // set up requests for the files required by the widget
       const requests = [];
       // first, load the widget class
@@ -50,9 +62,8 @@ class WidgetWrapper extends Component {
       Promise.all(requests)
       .then(([module, defaultLocaleMessages, localeMessages]) => {
         this.WidgetClass = module.default;
-        this.messages = intl.messages;
-        // merge app messages with widget default and current locale messages
-        this.messages = {...intl.messages, ...defaultLocaleMessages,  ...localeMessages};
+        // merge the widget's messages for the current locale w/ the widget's defaults
+        this.widgetMessages = {...defaultLocaleMessages,  ...localeMessages};
         // re-render the widget
         this.setState({ isWidgetLoaded: true });
       });
@@ -66,17 +77,25 @@ class WidgetWrapper extends Component {
   }
 
   render() {
+    if (!this.state.isWidgetLoaded) {
+      // NOTE: currently this widget will never render on the server,
+      // b/c isWidgetLoaded is only true after componentDidMount() calls loadWidget()
+      // TODO: make this work more like ExB which, I assume,
+      // renders local widgets (i.e. those not remotely hosted) on the server
+      return null;
+    }
+    const dependency = this.state.dependency;
+    if (dependency && !this.props.loadedDependencies.includes(dependency)) {
+      // wait for the dependency to load before rendering
+      return null;
+    }
+    // merge app messages with widget default and current locale messages
+    const messages = {...this.props.intl.messages, ...this.widgetMessages};
     // render the widget wrapped in <IntlProvider />
-    // NOTE: currently this widget will never render on the server,
-    // b/c isWidgetLoaded is only true after componentDidMount() calls loadWidget()
-    // TODO: make this work more like ExB which, I assume,
-    // renders local widgets (i.e. those not remotely hosted) on the server
-    return this.state.isWidgetLoaded && (
-      <IntlProvider locale={this.props.intl.locale} messages={this.messages} initialNow={parseInt(window.INITIAL_NOW, 10)}>
-        {/* NOTE: we are passing intl as a prop so that widget authors don't have to injectIntl() */}
-        <this.WidgetClass intl={this.props.intl} />
-      </IntlProvider>
-    );
+    return <IntlProvider locale={this.props.intl.locale} messages={messages} initialNow={parseInt(window.INITIAL_NOW, 10)}>
+      {/* NOTE: we are passing intl as a prop so that widget authors don't have to injectIntl() */}
+      <this.WidgetClass intl={this.props.intl} />
+    </IntlProvider>;
   }
 }
 

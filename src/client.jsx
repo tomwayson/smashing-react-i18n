@@ -3,9 +3,7 @@ import ReactDOM from 'react-dom';
 import App from './components/App';
 import { addLocaleData, IntlProvider } from 'react-intl';
 import Cookie from 'js-cookie';
-import { getBrowserLanguage, getSupportedLocale } from 'util/i18n';
-import { fetchJson } from './util';
-// include default messages in the bundle
+import { getBrowserLanguage, getSupportedLocale, loadLocaleMessages } from 'util/i18n';
 const defaultMessages = require('../public/assets/en.json');
 
 // NOTE: this needs to be the same as what is required for defaultMessages
@@ -34,19 +32,7 @@ if (!locale) {
   Cookie.set('locale', locale);
 }
 
-function loadLocaleMessages(locale, defaultLocale, defaultMessages) {
-  if (locale !== defaultLocale) {
-    return fetchJson(`/public/assets/${locale}.json`)
-    .then(localeMessages => {
-      // each message should fallback to the default if not available for current locale
-      return { ...defaultMessages, ...localeMessages }
-    });
-  } else {
-    return Promise.resolve(defaultMessages);
-  }
-}
-
-loadLocaleMessages(locale, defaultLocale, defaultMessages)
+loadLocaleMessages('/public/assets', locale, defaultLocale, defaultMessages)
   .then(messages => {
     // NOTE: the locales are added to window.ReactIntlLocaleData in a script embedded on the server
     addLocaleData(window.ReactIntlLocaleData[defaultLocale]);

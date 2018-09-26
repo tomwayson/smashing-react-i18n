@@ -1,0 +1,5 @@
+{
+  "dependency": "arcgis",
+  "defaultLocale": "en",
+  "supportedLocales": ["en", "es"]
+}

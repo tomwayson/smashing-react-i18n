@@ -1,0 +1,3 @@
+{
+  "arcgis.featureCount.yourQueryReturnedFeatures": "Your query returned {count, number} {count, plural, one {feature} other {features}}"
+}

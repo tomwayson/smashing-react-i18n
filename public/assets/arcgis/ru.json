@@ -1,0 +1,3 @@
+{
+  "arcgis.featureCount.yourQueryReturnedFeatures": "Ваш запрос возвратил {count, number} {count, plural, one {функцию} few {функции} many {функций}}"
+}
